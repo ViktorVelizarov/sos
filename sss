@@ -1,0 +1,457 @@
+#include <iostream>
+#include <string> 
+#include <time.h>  
+#include <iomanip>   
+#include <vector>
+#include <stdlib.h>
+
+
+using namespace std;
+
+void generateNumNoDuplicates(int numbers[])
+{
+	int br = 1;
+	srand(time(NULL));
+	while (br != 0)
+	{
+		br = 0;
+		for (int i = 0; i < 4; i++)
+		{
+
+			numbers[i] = rand() % 7 + 1;
+			for (int j = 0; j < 4; j++)
+			{
+				if (numbers[i] == numbers[j] && i != j)
+				{
+					br++;
+				}
+			}
+		}
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		cout << numbers[i] << " ";
+	}
+}
+
+void generateNumWithDuplicates(int numbers[])
+{
+	for (int i = 0; i < 4; i++)
+	{
+		numbers[i] = rand() % 7 + 1;
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		cout << numbers[i] << " ";
+	}
+}
+
+
+bool checkInteger(string str)
+{
+	for (int i = 0; i < str.length(); i++)
+	{
+		if (isdigit(str[i]) == false)
+			return false;
+	}
+	return true;
+}
+void inputGuessNumbers(int userNumbers[])
+{
+	string arrayNumbers;
+	bool b = true;
+	cout << " Input 4 numbers :";
+	for (int i = 0; i < 4; i++)
+	{
+		cin >> arrayNumbers;
+		if (checkInteger(arrayNumbers) == false)
+		{
+			if (b = true)
+			{
+				cout << "The value you entered was not an integer. Please enter a whole number : ";
+				b = false;
+			}
+
+				do {
+					cin >> arrayNumbers;
+
+					checkInteger(arrayNumbers);
+				} while (checkInteger(arrayNumbers) == false);
+			
+			
+		}
+		userNumbers[i] = stoi(arrayNumbers);
+		if (userNumbers[i] < 0 or userNumbers[i] > 7)
+		{
+
+			do {
+				cout << " your number must be between 0 and 7" << endl;
+				cin >> userNumbers[i];
+			} while (userNumbers[i] < 0 or userNumbers[i] > 7);
+		}
+	}
+	system("CLS");
+	cout << endl;
+}
+
+
+
+bool areEqual(int numbers[], int finalNumbers[])
+{
+	for (int i = 0; i < 4; i++)
+		if (numbers[i] != finalNumbers[i])
+			return false;
+	return true;
+}
+void createVector(vector<int> arrayOfGuesses[], int userNumbers[], int numberOfGuesses, int vectorSize)
+{     
+
+		for (int j = 0; j < vectorSize; j++)
+		{
+	        arrayOfGuesses[numberOfGuesses].push_back(userNumbers[j]);
+		}
+}
+void outputVector(vector<int> guessedNumAndPos[], int numberOfGuesses, vector<int> arrayOfGuesses[], vector<int> guessedNumbers[], int br)
+{
+	
+	vector<int>::iterator it;
+	vector<int>::iterator it2;
+	for (int i = 0; i < numberOfGuesses; i++)
+	{
+		int br1 = 0;
+		cout << setw(10) << setiosflags(ios::right) << " ";
+		cout << "|";
+		for (it = guessedNumAndPos[i].begin();
+			it < guessedNumAndPos[i].end(); it++)
+		{
+			br1++;
+			cout << *it << " ";
+		}
+		for (int i = 0; i < 4 - br1; i++)
+		{
+			cout << "  ";
+		}
+		cout << "|";
+		cout << setw(30) << setiosflags(ios::right) << " ";
+		cout << "|";
+		for (it2 = arrayOfGuesses[i].begin();
+			it2 < arrayOfGuesses[i].end(); it2++) {
+			cout << *it2 << " ";
+		}
+		cout << "|";
+		cout << setw(30) << setiosflags(ios::right) << " ";
+		cout << "|";
+		for (it = guessedNumbers[i].begin();
+			it < guessedNumbers[i].end(); it++) {
+
+
+			cout << *it << " ";
+		}
+		cout << "|";
+		cout << endl;
+	}
+}
+bool GameOver()
+{
+	string levelChoice;
+	int level;
+	cout << " !-- GAME OVER --!" << endl;
+	cout << "1.Play again" << endl;
+	cout << "2.Exit Game" << endl;
+	cin >> levelChoice;
+	if (checkInteger(levelChoice) == false)
+	{
+		do {
+			cout << "The value you entered was not an integer. Please enter a whole number : ";
+			cin >> levelChoice;
+			checkInteger(levelChoice);
+		} while (checkInteger(levelChoice) == false);
+	}
+	level = stoi(levelChoice);
+	switch (level)
+	{
+	case 1:
+		
+		break;
+	case 2:
+		exit(1);
+		break;
+	default:
+		cout << "The number you choose was not valid!" << endl;
+		GameOver();
+		break;
+	}
+}
+void compareNumbers(int numbers[], int userNumbers[], int  numberOfGuesses)
+{
+	
+	int finalNumbers[4] = { 10, 10,10,10 };
+	int br = 0;
+	vector<int> guessedNumAndPos[100];
+	vector<int> arrayOfGuesses[100];
+	vector<int> guessedNumbers[100];
+
+		while (areEqual(numbers, finalNumbers) == false)
+		{
+			inputGuessNumbers(userNumbers);
+			createVector(arrayOfGuesses, userNumbers, numberOfGuesses, 4);
+			for (int i = 0; i < 4; i++)
+			{
+				if (numbers[i] == userNumbers[i])
+				{
+					br++;
+					guessedNumAndPos[numberOfGuesses].push_back(numbers[i]);
+					finalNumbers[i] = numbers[i];
+				}
+				if (numbers[i] != userNumbers[i])
+				{
+					
+					for (int j = 0; j < 4; j++)
+					{
+
+						if (numbers[i] == userNumbers[j])
+						{
+							guessedNumbers[numberOfGuesses].push_back(numbers[i]);
+						}
+					}
+				}
+			}
+			numberOfGuesses++;
+			cout << "Guesses left:" << 13 - numberOfGuesses << endl;
+			cout << setw(60) << setiosflags(ios::right) << "+------------+" << endl;
+			cout << setw(60) << setiosflags(ios::right) << "|4 digit code|" << endl;
+			cout << setw(60) << setiosflags(ios::right) << "|------------|" << endl;
+			cout << setw(49) << setiosflags(ios::right) << "|  ";
+			for (int i = 0; i < 4; i++)
+			{
+				if (finalNumbers[i] == 10)
+				{
+					cout << "? ";
+				}
+				else
+				{
+					cout << finalNumbers[i] << " ";
+				}
+			}
+			cout << "  |" << endl;
+			cout << setw(60) << setiosflags(ios::right)  << "+------------+";
+			cout << endl << endl;
+			cout << "+-----------------------------+";
+			cout << setw(29) << setiosflags(ios::right) << "+--------+";
+			cout << setw(30) << setiosflags(ios::right) << "+---------------+" << endl;
+			cout << "|Guessed numbers and positions|";
+			cout << setw(29) << setiosflags(ios::right) << "| Gueses |";
+			cout << setw(30) << setiosflags(ios::right) << "|Guessed numbers|" << endl;
+			cout << "+-----------------------------+";
+			cout << setw(29) << setiosflags(ios::right) << "+--------+";
+			cout << setw(30) << setiosflags(ios::right) << "+---------------+" << endl;
+			if (numberOfGuesses >= 13)
+			{
+				cout << "You have no more guesses. Better luck next time! " << endl;
+				GameOver();
+				break;
+			}
+			else
+			{
+				outputVector(guessedNumAndPos, numberOfGuesses, arrayOfGuesses, guessedNumbers, br);
+			}
+		}	
+}
+
+
+void setNumWithDuplicates(int numbers[])
+{
+	string arrayNumbers;
+	cout << "Enter the 4 secret numbers manualy : ";
+	for (int i = 0; i < 4; i++)
+	{
+		cin >> arrayNumbers;
+		if (checkInteger(arrayNumbers) == false)
+		{
+			do {
+				cout << "The value you entered was not an integer. Please enter a whole number : ";
+				cin >> arrayNumbers;
+				checkInteger(arrayNumbers);
+			} while (checkInteger(arrayNumbers) == false);
+		}
+		numbers[i] = stoi(arrayNumbers);
+		if (numbers[i] < 0 or numbers[i] > 7)
+		{
+
+			do {
+				cout << " your number must be between 0 and 7" << endl;
+				cin >> numbers[i];
+			} while (numbers[i] < 0 or numbers[i] > 7);
+		}
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		cout << numbers[i] << " ";
+	}
+}
+void setNumNoDuplicates(int numbers[])
+{
+	string arrayNumbers;
+	int duplicates = 0;
+	cout << "Enter the 4 secret numbers manualy : ";
+	for (int i = 0; i < 4; i++)
+	{
+		cin >> arrayNumbers;
+		if (checkInteger(arrayNumbers) == false)
+		{
+			do {
+				cout << "The value you entered was not an integer. Please enter a whole number : ";
+				cin >> arrayNumbers;
+				checkInteger(arrayNumbers);
+			} while (checkInteger(arrayNumbers) == false);
+		}
+		numbers[i] = stoi(arrayNumbers);
+		if (numbers[i] < 0 or numbers[i] > 7)
+		{
+
+			do {
+				cout << " your number must be between 0 and 7" << endl;
+				cin >> numbers[i];
+			} while (numbers[i] < 0 or numbers[i] > 7);
+		}
+	}
+	
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (i != j and numbers[i] == numbers[j])
+				duplicates++;
+		}
+	}
+	if (duplicates > 0)
+	{
+		cout << "Try again , but this time without duplicates";
+		setNumNoDuplicates(numbers);
+	}
+}
+
+void levelMenu(int numbers[], int userNumbers[], int numberOfGuesses)
+{
+	int br = 0;
+	string startingMenu;
+	string levelChoice;
+	string DuplicateChoice;
+	int startingChoice;
+	int choice;
+	int level;
+	cout << "Welcome to Bletchley code breakers" << endl;
+	cout << "1 - how to play" << endl;
+	cout << "2 - play game" << endl;
+	cout << "3 - exit game" << endl;
+	cin >> startingMenu;
+	if (checkInteger(startingMenu) == false)
+	{
+		do {
+			cout << "The value you entered was not an integer. Please enter a whole number : ";
+			cin >> startingMenu;
+			checkInteger(startingMenu);
+		} while (checkInteger(startingMenu) == false);
+	}
+	startingChoice = stoi(startingMenu);
+	switch (startingChoice)
+	{
+	case 1:
+		cout << "how to play" << endl;
+	case 2:
+		cout << " Choose a level" << endl;
+		cout << "LEVEL 1 - two players" << endl;
+		cout << "LEVEL 2 - against the computer" << endl;
+		cout << "3.Exit Game" << endl;
+		cin >> levelChoice;
+		if (checkInteger(levelChoice) == false)
+		{
+			do {
+				cout << "The value you entered was not an integer. Please enter a whole number : ";
+				cin >> levelChoice;
+				checkInteger(levelChoice);
+			} while (checkInteger(levelChoice) == false);
+		}
+		level = stoi(levelChoice);
+		switch (level)
+		{
+		case 1:
+			cout << "With duplicates or without?" << endl;
+			cout << "1. With duplicates" << endl;
+			cout << "2. No duplicates" << endl;
+			cin >> DuplicateChoice;
+			if (checkInteger(DuplicateChoice) == false)
+			{
+				do {
+					cout << "The value you entered was not an integer. Please enter a whole number : ";
+					cin >> DuplicateChoice;
+					checkInteger(DuplicateChoice);
+				} while (checkInteger(DuplicateChoice) == false);
+			}
+			choice = stoi(DuplicateChoice);
+			switch (choice)
+			{
+			case 1:
+				setNumWithDuplicates(numbers);
+				compareNumbers(numbers, userNumbers, numberOfGuesses);
+				break;
+			case 2:
+				setNumNoDuplicates(numbers);
+				compareNumbers(numbers, userNumbers, numberOfGuesses);
+				break;
+			default:
+				cout << "The number you choose was not valid!" << endl;
+				levelMenu(numbers, userNumbers, numberOfGuesses);
+				break;
+			}
+			break;
+		default:
+			cout << "The number you choose was not valid!" << endl;
+			levelMenu(numbers, userNumbers, numberOfGuesses);
+			break;
+		case 2:
+			cout << "With duplicates or without?" << endl;
+			cout << "1. With duplicates" << endl;
+			cout << "2. No duplicates" << endl;
+			cin >> DuplicateChoice;
+			if (checkInteger(DuplicateChoice) == false)
+			{
+				do {
+					cout << "The value you entered was not an integer. Please enter a whole number : ";
+					cin >> DuplicateChoice;
+					checkInteger(DuplicateChoice);
+				} while (checkInteger(DuplicateChoice) == false);
+			}
+			choice = stoi(DuplicateChoice);
+			switch (choice)
+			{
+			case 1:
+				generateNumWithDuplicates(numbers);
+				compareNumbers(numbers, userNumbers, numberOfGuesses);
+
+				break;
+			case 2:
+				generateNumNoDuplicates(numbers);
+				compareNumbers(numbers, userNumbers, numberOfGuesses);
+				break;
+			default:
+				cout << "The number you choose was not valid!" << endl;
+				levelMenu(numbers, userNumbers, numberOfGuesses);
+				break;
+			}
+		case 3:
+			
+			exit(1);
+		}
+	case 3:
+		
+		exit(1);
+	}
+}
+int main()
+{
+	int numbers[4];
+	int userNumbers[4];
+	int numberOfGuesses = 0;
+	levelMenu(numbers, userNumbers , numberOfGuesses);
+}
